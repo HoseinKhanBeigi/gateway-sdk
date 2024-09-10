@@ -272,7 +272,7 @@ const Post = () => {
       });
       videoRef.current.srcObject = stream;
       // streamRef.current = stream;
-      // await new Promise((resolve) => (video.onloadedmetadata = resolve));
+      await new Promise((resolve) => (video.onloadedmetadata = resolve));
       videoRef.current.play();
       // setupMediaRecorder(stream, mediaRecorderRef);
     } catch (err) {
