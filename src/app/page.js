@@ -285,7 +285,7 @@ const Post = () => {
       height={"100vh"}
     >
       {/* {loading && <>loading...</>} */}
-      {kycId && token && loadPage && !loading && !notify ? (
+      {kycId && token && loadPage && !loading && (
         <CacheInput>
           <Box sx={{ maxWidth: 400 }} dir="rtl">
             <Stepper activeStep={activeStep} orientation="vertical">
@@ -345,8 +345,6 @@ const Post = () => {
         )} */}
           </Box>
         </CacheInput>
-      ) : (
-        <>{notify}</>
       )}
 
       {/* {notify && <>{notify}</>} */}
