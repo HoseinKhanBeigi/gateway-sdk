@@ -130,10 +130,6 @@ const Post = () => {
 
       setToken(event.data.token);
       setKycId(event.data.kycId);
-
-      setTimeout(() => {
-        handleNext(event.data.token, event.data.kycId);
-      }, 1500);
     };
 
     window.addEventListener("message", handleMessage);
@@ -285,13 +281,13 @@ const Post = () => {
   };
 
   useEffect(() => {
-    setLoadPage(true);
-    if (loadPage) startVideo();
+    // setLoadPage(true);
+    startVideo();
 
     // window.addEventListener("DOMContentLoaded", () => {
 
     // });
-  }, [loadPage]);
+  }, []);
 
   return (
     <Grid
