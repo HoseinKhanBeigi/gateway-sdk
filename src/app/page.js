@@ -284,9 +284,9 @@ const Post = () => {
     }
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     setLoadPage(true);
-    if (loadPage) await startVideo();
+    if (loadPage) startVideo();
 
     // window.addEventListener("DOMContentLoaded", () => {
 
