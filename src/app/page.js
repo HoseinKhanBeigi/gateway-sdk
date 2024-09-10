@@ -284,65 +284,16 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
+      <video
+        // ref={videoRef}
+        width="640"
+        height="780"
+        autoplay={true}
+        loop={true}
+        muted={true}
+        playsinline={true}
+      />
       {/* {loading && <>loading...</>} */}
-      {kycId && token && loadPage && !loading && (
-        <Box sx={{ maxWidth: 400 }}>
-          <Stepper activeStep={activeStep} orientation="vertical">
-            {steps.map((step, index) => (
-              <Step key={step.label}>
-                <StepLabel
-                  style={{ width: "10px" }}
-                  // optional={
-                  //   index === 2 ? (
-                  //     <Typography variant="caption">Last step</Typography>
-                  //   ) : null
-                  // }
-                >
-                  {step.label}
-                </StepLabel>
-                <StepContent TransitionProps={{ unmountOnExit: true }}>
-                  {desc(step)}
-                  <Box sx={{ mb: 2 }}>
-                    <div>
-                      <LoadingButton
-                        variant="contained"
-                        onClick={() => handleNext1(index, token, kycId)}
-                        sx={{
-                          mt: 1,
-                          mr: 1,
-                          display: index === 1 && !isGetFile ? "none" : "block",
-                        }}
-                        loading={index === steps.length - 1 && progress}
-                        disabled={
-                          index === steps.length - 1 ||
-                          (index === 1 && !isGetFile)
-                        }
-                      >
-                        {index === steps.length - 1 ? "پایان" : "ادامه"}
-                      </LoadingButton>
-                      {/* <Button
-                      disabled={index === 0}
-                      onClick={handleBack}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      Back
-                    </Button> */}
-                    </div>
-                  </Box>
-                </StepContent>
-              </Step>
-            ))}
-          </Stepper>
-          {/* {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3 }}>
-            <Typography>All steps completed - you&apos;re finished</Typography>
-            <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-              Reset
-            </Button>
-          </Paper>
-        )} */}
-        </Box>
-      )}
 
       {/* {notify && <>{notify}</>} */}
       {/* {!kycId && !token && !loading && !notify && <>page not found</>} */}
