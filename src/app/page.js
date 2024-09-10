@@ -304,7 +304,7 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
-      <div className="video-container" ref={videoContainer}>
+      <div className="video-container">
         <video
           ref={videoRef}
           width="640"
