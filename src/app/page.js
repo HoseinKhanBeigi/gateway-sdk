@@ -277,6 +277,26 @@ const Post = () => {
     // });
   }, [loadPage]);
 
+  const videoRef = useRef(null);
+  const startVideo = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+      videoRef.current.srcObject = stream;
+      // streamRef.current = stream;
+      // await new Promise((resolve) => (video.onloadedmetadata = resolve));
+      videoRef.current.play();
+      // setupMediaRecorder(stream, mediaRecorderRef);
+    } catch (err) {
+      console.error("Error accessing the camera: ", err);
+    }
+  };
+
+  useEffect(() => {
+    startVideo();
+  }, []);
+
   return (
     <Grid
       container
@@ -285,7 +305,7 @@ const Post = () => {
       height={"100vh"}
     >
       <video
-        // ref={videoRef}
+        ref={videoRef}
         width="640"
         height="780"
         autoplay={true}
