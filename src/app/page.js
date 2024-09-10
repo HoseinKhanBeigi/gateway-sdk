@@ -304,15 +304,18 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
-      <video
-        ref={videoRef}
-        width="640"
-        height="780"
-        autoplay={true}
-        loop={true}
-        muted={true}
-        playsinline={true}
-      />
+      <div className="video-container" ref={videoContainer}>
+        <video
+          ref={videoRef}
+          width="640"
+          height="780"
+          autoplay={true}
+          loop={true}
+          muted={true}
+          playsinline={true}
+        />
+      </div>
+
       {/* {loading && <>loading...</>} */}
 
       {/* {notify && <>{notify}</>} */}
