@@ -217,13 +217,7 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
       </div>
       <div>
         <div className="video-container" ref={videoContainer}>
-          <video
-            ref={videoRef}
-            width="640"
-            height="780"
-            playsinline={true}
-            loop={true}
-          />
+          <video ref={videoRef} width="640" height="780" playsinline={true} />
           <FaceSvg
             ref={containerRef}
             firstStepIsCenterIsCompleted={firstStepIsCenterIsCompleted}
