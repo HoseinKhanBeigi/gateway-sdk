@@ -265,28 +265,20 @@ const Post = () => {
     };
   }, []);
   const videoRef = useRef(null);
-  const startVideo = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      videoRef.current.srcObject = stream;
-      // streamRef.current = stream;
-      await new Promise((resolve) => (video.onloadedmetadata = resolve));
-      videoRef.current.play();
-      // setupMediaRecorder(stream, mediaRecorderRef);
-    } catch (err) {
-      console.error("Error accessing the camera: ", err);
-    }
-  };
 
   useEffect(() => {
-    // setLoadPage(true);
-    startVideo();
-
-    // window.addEventListener("DOMContentLoaded", () => {
-
-    // });
+    // Request access to the user's camera
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        // Set the video stream as the source of the video element
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      })
+      .catch((err) => {
+        console.error("Error accessing camera: ", err);
+      });
   }, []);
 
   return (
@@ -298,7 +290,7 @@ const Post = () => {
     >
       <Box sx={{ width: 300 }}>
         <div className="video-container">
-          <video ref={videoRef} width="640" height="780" playsinline={true} />
+          <video ref={videoRef} width="600" autoPlay />
         </div>
       </Box>
 
