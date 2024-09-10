@@ -221,10 +221,10 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
             ref={videoRef}
             width="640"
             height="780"
-            autoplay
-            loop
-            muted
-            playsinline
+            autoplay={true}
+            loop={true}
+            muted={true}
+            playsinline={true}
           />
           <FaceSvg
             ref={containerRef}
