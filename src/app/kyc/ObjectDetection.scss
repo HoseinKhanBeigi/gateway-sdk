@@ -1,0 +1,460 @@
+/* src/ObjectDetection.css */
+
+.detection-container {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border: 1px solid transparent;
+  border-radius: 37px;
+  transition: box-shadow 0.5s ease-in-out;
+}
+.half-circle {
+  width: 200px; /* Full width of the circle */
+  height: 100px; /* Half the height of the circle */
+  background-color: #3498db; /* Color of the circle */
+  border-top-left-radius: 100px; /* Half of the width */
+  border-top-right-radius: 100px; /* Half of the width */
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.hamburger {
+  display: block;
+  position: absolute;
+  top: 100px;
+  width: 100%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  /* box-sizing: border-box; */
+  /* content: '';
+
+  /* pointer-events: none; */
+  /* border: 4px solid var(--button-circle); */
+  /* border-radius: 50%; */
+  -webkit-animation-duration: 0.9s;
+  animation-duration: 0.9s;
+  -webkit-animation-name: intervalHamburgerBorder;
+  animation-name: intervalHamburgerBorder;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+
+.svgArrow {
+  fill: #ffffff;
+}
+
+.svgArrow.active {
+  fill: #28a745;
+  transition: fill 0.5s ease-in-out;
+}
+
+.svgArrow.inactive {
+  fill: rgb(243, 243, 243);
+  transition: fill 0.5s ease-in-out;
+}
+
+.svgArrow.pendingActive {
+  fill: #0008ff;
+  transition: fill 0.5s ease-in-out;
+}
+
+@keyframes intervalHamburgerBorder {
+  0% {
+    opacity: 1;
+    -webkit-transform: translateY(-20%);
+    transform: translateY(-20%);
+  }
+  80% {
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+}
+
+.face-svg {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 50%;
+  width: 100%;
+  height: auto;
+  border: 1px solid transparent;
+  border-radius: 100%;
+}
+
+.face-svg.active {
+  box-shadow: 0px -50px 29px -28px #e93f33;
+  transition: box-shadow 0.5s ease-in-out;
+}
+
+.face-svg.inactive {
+  box-shadow: 0px 0px 29px -28px transparent;
+  transition: box-shadow 0.5s ease-in-out;
+}
+
+.preStartForCamera {
+  width: 100%;
+  height: 100vh;
+  background-color: #28282b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  position: absolute;
+}
+
+video,
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.circle-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.5s ease;
+}
+
+.crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crosshair .vertical-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  /* background-color: rgba(255, 0, 0  0.5); */
+  transform: translateX(-50%);
+}
+
+.crosshair .horizontal-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  /* background-color: rgba(255, 0, 0, 0.5);   */
+  transform: translateY(-50%);
+}
+
+.correct-position {
+  background-color: green;
+}
+
+.wrong-position {
+  background-color: red;
+}
+
+.direction-indicator {
+  position: absolute;
+  height: 100px;
+  top: 100px;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+}
+
+.direction-indicator.left::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-right: 40px solid rgba(255, 0, 0, 0.5);
+  transform: translateY(-50%);
+  animation: flash 0.5s ease;
+}
+
+.direction-indicator.right::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 40px solid rgba(255, 0, 0, 0.5);
+  transform: translateY(-50%);
+  animation: flash 0.5s ease;
+}
+
+.direction-indicator.up {
+  transform: translateX(-50%);
+  animation: flash 0.5s ease;
+}
+
+.direction-indicator.down::after {
+  content: "";
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 40px solid rgba(255, 0, 0, 0.5);
+  transform: translateX(-50%);
+  animation: flash 0.5s ease;
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hint {
+  position: relative;
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.7em;
+
+  color: #535353;
+  text-align: center;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5em;
+  color: black;
+  background: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.DownIcon {
+  position: absolute;
+  width: 300px;
+  bottom: 261px;
+  animation: DownIcon 1s infinite alternate ease-in-out;
+}
+
+@keyframes DownIcon {
+  0% {
+    bottom: 261px;
+  }
+  100% {
+    bottom: 204px;
+  }
+}
+
+.UpIcon {
+  position: absolute;
+  height: 100px;
+  top: 100px;
+  left: 45%;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+  animation: UpIcon 1s infinite alternate ease-in-out;
+}
+
+@keyframes UpIcon {
+  0% {
+    top: 140px;
+  }
+  100% {
+    top: 100px;
+  }
+}
+
+.LeftIcon {
+  position: absolute;
+  width: 300px;
+  bottom: 261px;
+  animation: LeftIcon 1s infinite alternate ease-in-out;
+}
+
+@keyframes LeftIcon {
+  0% {
+    bottom: 261px;
+  }
+  100% {
+    bottom: 234px;
+  }
+}
+
+.rightIcon {
+  position: absolute;
+  width: 300px;
+  bottom: 261px;
+  animation: rightIcon 1s infinite alternate ease-in-out;
+}
+
+@keyframes rightIcon {
+  0% {
+    bottom: 261px;
+  }
+  100% {
+    bottom: 234px;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.grid > div > div {
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.not-centered {
+  /* background-color: red; */
+}
+
+.step-completed {
+  /* background-color: green; */
+}
+
+.buttonSaveRecording {
+  position: relative;
+  padding: 8px 16px;
+  background: #00a2ff;
+  color: white;
+  border: none;
+  outline: none;
+  border-radius: 2px;
+  cursor: pointer;
+  width: 120px;
+}
+.buttonLoading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 0;
+
+  bottom: 0;
+  margin: auto;
+  border: 4px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: button-loading-spinner 1s ease infinite;
+}
+
+.buttonSaveRecording.disabled {
+  background-color: silver;
+}
+
+.buttonSaveRecording:active {
+  background: #00a2ff;
+}
+
+.button__text {
+  font: bold 20px "Quicksand", san-serif;
+  color: #ffffff;
+  transition: all 0.2s;
+}
+
+.progress-container {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: 32%;
+  transform: translate(-50%, -50%);
+}
+
+.progress-circle {
+  width: 100px;
+  height: 100px;
+  transform: rotate(-90deg);
+}
+
+.progress-bg,
+.progress {
+  fill: none;
+  stroke-width: 3.8;
+}
+
+.progress-bg {
+  stroke: #e6e6e6;
+}
+
+.progress {
+  stroke: #007bff;
+  stroke-linecap: round;
+  stroke-dasharray: 100, 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2em;
+  font-weight: bold;
+}
