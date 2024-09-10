@@ -298,14 +298,7 @@ const Post = () => {
     >
       <Box sx={{ width: 300 }}>
         <div className="video-container">
-          <video
-            ref={videoRef}
-            width="640"
-            height="780"
-            autoplay={true}
-            muted={true}
-            playsinline={true}
-          />
+          <video ref={videoRef} width="640" height="780" playsinline={true} />
         </div>
       </Box>
 
