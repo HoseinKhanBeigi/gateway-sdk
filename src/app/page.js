@@ -277,26 +277,6 @@ const Post = () => {
     // });
   }, [loadPage]);
 
-  const videoRef = useRef(null);
-  const startVideo = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      videoRef.current.srcObject = stream;
-      // streamRef.current = stream;
-      // await new Promise((resolve) => (video.onloadedmetadata = resolve));
-      videoRef.current.play();
-      // setupMediaRecorder(stream, mediaRecorderRef);
-    } catch (err) {
-      console.error("Error accessing the camera: ", err);
-    }
-  };
-
-  useEffect(() => {
-    startVideo();
-  }, []);
-
   return (
     <Grid
       container
@@ -304,16 +284,18 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
-      <div className="video-container">
-        <video
-          ref={videoRef}
-          width="640"
-          height="780"
-          autoplay={true}
-          muted={true}
-          playsinline={true}
-        />
-      </div>
+      <Box sx={{ maxWidth: 400 }}>
+        <div className="video-container">
+          <video
+            // ref={videoRef}
+            width="640"
+            height="780"
+            autoplay={true}
+            muted={true}
+            playsinline={true}
+          />
+        </div>
+      </Box>
 
       {/* {loading && <>loading...</>} */}
 
