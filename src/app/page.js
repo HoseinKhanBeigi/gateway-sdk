@@ -254,9 +254,9 @@ const Post = () => {
   const handleNext1 = (index, token) => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (index === 0) {
-      const audio = new Audio(`/startForCamera.mp3`);
-      setStartPlaySound(audio);
-      audio.play();
+      // const audio = new Audio(`/startForCamera.mp3`);
+      // setStartPlaySound(audio);
+      // audio.play();
     }
     if (index === 1) {
       handleSendVideo(token, kycId);
