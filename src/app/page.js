@@ -310,7 +310,6 @@ const Post = () => {
           width="640"
           height="780"
           autoplay={true}
-          loop={true}
           muted={true}
           playsinline={true}
         />
