@@ -274,6 +274,11 @@ const Post = () => {
         // Set the video stream as the source of the video element
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+
+          // Play the video explicitly after the stream is set
+          videoRef.current.play().catch((error) => {
+            console.error("iOS autoplay restriction:", error);
+          });
         }
       })
       .catch((err) => {
@@ -290,7 +295,12 @@ const Post = () => {
     >
       <Box sx={{ width: 300 }}>
         <div className="video-container">
-          <video ref={videoRef} width="600" autoPlay />
+          <video
+            ref={videoRef}
+            width="600"
+            autoPlay={true}
+            playsInline={true}
+          />
         </div>
       </Box>
 
