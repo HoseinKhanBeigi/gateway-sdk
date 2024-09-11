@@ -307,12 +307,9 @@ const Post = () => {
     >
       <div style={{ width: 400 }}>
         <div className="video-container">
-          <video
-            ref={videoRef}
-            width="640"
-            playsinline={true}
-            autoPlay={true}
-          />
+          <div>
+            <video ref={videoRef} width="600" autoPlay playsInline />
+          </div>
         </div>
       </div>
       {/* {loading && <>loading...</>} */}
