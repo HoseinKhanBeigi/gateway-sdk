@@ -180,6 +180,7 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
         // Set the video stream as the source of the video element
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          streamRef.current = stream;
 
           // Play the video explicitly after the stream is set
           videoRef.current.play().catch((error) => {
