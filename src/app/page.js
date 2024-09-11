@@ -309,7 +309,14 @@ const Post = () => {
       height={"100vh"}
     >
       <Box sx={{ width: 400 }} dir="rtl">
-        <video ref={videoRef} width="640" playsinline={true} autoPlay={true} />
+        <div className="video-container">
+          <video
+            ref={videoRef}
+            width="640"
+            playsinline={true}
+            autoPlay={true}
+          />
+        </div>
       </Box>
       {/* {loading && <>loading...</>} */}
 
