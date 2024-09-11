@@ -74,9 +74,8 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
         }, 4000);
       }).then(() => executeStep(index + 1));
     };
-    setTimeout(() => {
-      return executeStep(0);
-    }, 0);
+
+    return executeStep(0);
   };
 
   const startAnimationForAction = usePlayTransitionColorForActions(
@@ -501,7 +500,7 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
           />
         </svg> */}
         <div className="controls">
-          {!firstClick && errorPost === false && (
+          {!firstClick && errorPost === false && startPlaySound && (
             <Button
               variant="outlined"
               onClick={handleStartRecording}
