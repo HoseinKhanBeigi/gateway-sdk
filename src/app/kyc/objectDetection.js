@@ -232,12 +232,17 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
         </div>
       </div>
       <div>
-        <div className="video-container" ref={videoContainer}>
-          <video ref={videoRef} width="640" playsinline autoPlay />
-          <FaceSvg
+        <div className="video-container">
+          <video
+            ref={videoRef}
+            width="640"
+            playsinline={true}
+            autoPlay={true}
+          />
+          {/* <FaceSvg
             ref={containerRef}
             firstStepIsCenterIsCompleted={firstStepIsCenterIsCompleted}
-          />
+          /> */}
           {/* <Image
             style={{
               position: "absolute",
@@ -251,7 +256,7 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
             height={40}
             alt="Picture of the author"
           /> */}
-          {actionForArrowSvg === "right" && (
+          {/* {actionForArrowSvg === "right" && (
             <svg
               version="1.1"
               id="Layer_1"
@@ -395,7 +400,7 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
             >
               <polygon points="283.7,298.7 283.7,0 198.3,0 198.3,298.7 70.3,298.7 241,512 411.7,298.7 " />
             </svg>
-          )}
+          )} */}
           {/* <Image
             style={{
               position: "absolute",
