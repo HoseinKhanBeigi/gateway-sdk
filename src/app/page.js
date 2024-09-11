@@ -308,7 +308,7 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
-      <Box sx={{ width: 400 }} dir="rtl">
+      <Box sx={{ width: 400 }}>
         <div className="video-container">
           <video
             ref={videoRef}
