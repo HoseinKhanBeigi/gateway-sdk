@@ -39,7 +39,7 @@ const Post = () => {
   const router = useRouter();
 
   const [isGetFile, setIsGetFile] = useState(false);
-  const baseUrl = process.env.BASEURL;
+  const baseUrl = "https://api.levants.io";
   const handleGetRecordFile = (file) => {
     mediaRecorderRef.current = file;
     setIsGetFile(true);
