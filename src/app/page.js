@@ -128,6 +128,8 @@ const Post = () => {
       //   return; // Ignore messages from untrusted origins
       // }
 
+      console.log(event.data);
+
       setToken(event.data.token);
       setKycId(event.data.kycId);
 
