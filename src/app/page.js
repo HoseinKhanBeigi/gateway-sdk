@@ -279,14 +279,33 @@ const Post = () => {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    // startVideo();
+    // Request access to the user's camera
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
         // Set the video stream as the source of the video element
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          // streamRef.current = stream;
+
+          // Play the video explicitly after the stream is set
+          videoRef.current.play().catch((error) => {
+            console.error("iOS autoplay restriction:", error);
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Error accessing camera: ", err);
+      });
+  }, []);
+  useEffect(() => {
+    // Request access to the user's camera
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        // Set the video stream as the source of the video element
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+
           // Play the video explicitly after the stream is set
           videoRef.current.play().catch((error) => {
             console.error("iOS autoplay restriction:", error);
