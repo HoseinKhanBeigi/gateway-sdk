@@ -156,11 +156,9 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
       name: "Step 5",
       action: () => {
         stopAnimationForAction(3);
-        setTimeout(() => {
-          setActionForArrowSvg("");
-          handleStopRecording();
-          stopCamera();
-        }, 1000);
+        setActionForArrowSvg("");
+        handleStopRecording();
+        stopCamera();
       },
     },
   ];
