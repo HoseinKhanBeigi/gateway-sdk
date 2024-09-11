@@ -166,21 +166,21 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
     },
   ];
 
-  const { startVideo, stopCamera, startRecording } = useVideRecording(
+  const { stopCamera, startRecording } = useVideRecording(
     videoRef,
     streamRef,
     mediaRecorderRef
   );
 
   useEffect(() => {
-    // startVideo();
+    // Request access to the user's camera
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
         // Set the video stream as the source of the video element
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          streamRef.current = stream;
+
           // Play the video explicitly after the stream is set
           videoRef.current.play().catch((error) => {
             console.error("iOS autoplay restriction:", error);
@@ -233,12 +233,9 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
       </div>
       <div>
         <div className="video-container">
-          <video
-            ref={videoRef}
-            width="640"
-            playsinline={true}
-            autoPlay={true}
-          />
+          <div>
+            <video ref={videoRef} width="600" autoPlay playsInline />
+          </div>
           {/* <FaceSvg
             ref={containerRef}
             firstStepIsCenterIsCompleted={firstStepIsCenterIsCompleted}
