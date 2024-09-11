@@ -33,49 +33,98 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
   const [errorPost, setErrorPost] = useState(false);
   const [actionForArrowSvg, setActionForArrowSvg] = useState("");
 
-  const handleVoiceTrack = (action) => {
-    if (action === "center") {
-      const audio = new Audio(`/center.mp3`);
-      audio.play();
-    } else if (action === "left") {
-      const audio = new Audio(`/nowLeft.mp3`);
-      audio.play();
-      setActionForArrowSvg("left");
-      startAnimationArrowLeft();
-    } else if (action === "right") {
-      const audio = new Audio(`/pleaseRight.mp3`);
-      audio.play();
-      setActionForArrowSvg("right");
-      startAnimationArrowRight();
-    } else if (action === "up") {
-      setActionForArrowSvg("up");
-      startAnimationArrowUp();
-      const audio = new Audio(`/pleaseUp.mp3`);
-      audio.play();
-    } else if (action === "down") {
-      const audio = new Audio(`/nowDown.mp3`);
-      audio.play();
-      setActionForArrowSvg("down");
-      startAnimationArrowDown();
-    }
-  };
+  // const handleVoiceTrack = (action) => {
+  //   if (action === "center") {
+  //     const audio = new Audio(`/center.mp3`);
+  //     audio.play();
+  //   } else if (action === "left") {
+  //     const audio = new Audio(`/nowLeft.mp3`);
+  //     audio.play();
+  //     setActionForArrowSvg("left");
+  //     startAnimationArrowLeft();
+  //   } else if (action === "right") {
+  //     const audio = new Audio(`/pleaseRight.mp3`);
+  //     audio.play();
+  //     setActionForArrowSvg("right");
+  //     startAnimationArrowRight();
+  //   } else if (action === "up") {
+  //     setActionForArrowSvg("up");
+  //     startAnimationArrowUp();
+  //     const audio = new Audio(`/pleaseUp.mp3`);
+  //     audio.play();
+  //   } else if (action === "down") {
+  //     const audio = new Audio(`/nowDown.mp3`);
+  //     audio.play();
+  //     setActionForArrowSvg("down");
+  //     startAnimationArrowDown();
+  //   }
+  // };
 
-  const handleSequencesForJustHint = (steps) => {
-    const executeStep = (index) => {
-      if (index >= steps.length) {
-        return Promise.resolve();
+  const handleVoiceTrack = (action) => {
+    return new Promise((resolve) => {
+      let audio;
+      if (action === "center") {
+        audio = new Audio(`/center.mp3`);
+        audio.play();
+      } else if (action === "left") {
+        audio = new Audio(`/nowLeft.mp3`);
+        audio.play();
+        setActionForArrowSvg("left");
+        startAnimationArrowLeft();
+      } else if (action === "right") {
+        audio = new Audio(`/pleaseRight.mp3`);
+        audio.play();
+        setActionForArrowSvg("right");
+        startAnimationArrowRight();
+      } else if (action === "up") {
+        setActionForArrowSvg("up");
+        startAnimationArrowUp();
+        audio = new Audio(`/pleaseUp.mp3`);
+        audio.play();
+      } else if (action === "down") {
+        audio = new Audio(`/nowDown.mp3`);
+        audio.play();
+        setActionForArrowSvg("down");
+        startAnimationArrowDown();
       }
 
-      const step = steps[index];
-      return new Promise((resolve) => {
-        step.action();
-        setTimeout(() => {
-          resolve();
-        }, 4000);
-      }).then(() => executeStep(index + 1));
-    };
+      // Resolve the promise when the audio finishes playing
+      if (audio) {
+        audio.onended = resolve;
+      } else {
+        resolve(); // If no audio is played, resolve immediately
+      }
+    });
+  };
 
-    return executeStep(0);
+  // const handleSequencesForJustHint = (steps) => {
+  //   const executeStep = (index) => {
+  //     if (index >= steps.length) {
+  //       return Promise.resolve();
+  //     }
+
+  //     const step = steps[index];
+  //     return new Promise((resolve) => {
+  //       step.action();
+  //       setTimeout(() => {
+  //         resolve();
+  //       }, 4000);
+  //     }).then(() => executeStep(index + 1));
+  //   };
+
+  //   return executeStep(0);
+  // };
+
+  const handleSequencesForJustHint = async (steps) => {
+    for (const step of steps) {
+      try {
+        await step.action(); // Execute the action, allowing for async operations
+      } catch (error) {
+        console.error(`Error in ${step.name}:`, error);
+        throw error; // Exit if any step fails
+      }
+    }
+    console.log("All steps completed");
   };
 
   const startAnimationForAction = usePlayTransitionColorForActions(
@@ -121,47 +170,99 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
   const stepsSequences = [
     {
       name: "Step 1",
-      action: () => {
-        startAnimationForAction(0);
-        handleVoiceTrack(actions[0].action);
+      action: async () => {
+        startAnimationForAction(0); // Start first animation
+        await handleVoiceTrack(actions[0].action); // Assume handleVoiceTrack returns a promise
       },
     },
     {
       name: "Step 2",
-      action: () => {
+      action: async () => {
         containerRef.current.style.display = "none";
         stopAnimationForAction(0);
         startAnimationForAction(1);
         setFirstStepIsCenterIsCompleted("finish");
-        handleVoiceTrack(actions[1].action);
+        await handleVoiceTrack(actions[1].action); // Wait for voice track to finish
       },
     },
     {
       name: "Step 3",
-      action: () => {
+      action: async () => {
         stopAnimationForAction(1);
         startAnimationForAction(2);
-        handleVoiceTrack(actions[2].action);
+        await handleVoiceTrack(actions[2].action); // Wait for voice track
       },
     },
     {
       name: "Step 4",
-      action: () => {
+      action: async () => {
         stopAnimationForAction(2);
         startAnimationForAction(3);
-        handleVoiceTrack(actions[3].action);
+        await handleVoiceTrack(actions[3].action); // Wait for voice track
       },
     },
     {
       name: "Step 5",
-      action: () => {
+      action: async () => {
         stopAnimationForAction(3);
-        setActionForArrowSvg("");
-        handleStopRecording();
-        stopCamera();
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            setActionForArrowSvg("");
+            handleStopRecording();
+            stopCamera();
+            resolve(); // Ensure the step resolves after timeout
+          }, 1000); // 1-second delay before resolving
+        });
       },
     },
   ];
+
+  // Call the sequence handler with your steps
+
+  // const stepsSequences = [
+  //   {
+  //     name: "Step 1",
+  //     action: () => {
+  //       startAnimationForAction(0);
+  //       handleVoiceTrack(actions[0].action);
+  //     },
+  //   },
+  //   {
+  //     name: "Step 2",
+  //     action: () => {
+  //       containerRef.current.style.display = "none";
+  //       stopAnimationForAction(0);
+  //       startAnimationForAction(1);
+  //       setFirstStepIsCenterIsCompleted("finish");
+  //       handleVoiceTrack(actions[1].action);
+  //     },
+  //   },
+  //   {
+  //     name: "Step 3",
+  //     action: () => {
+  //       stopAnimationForAction(1);
+  //       startAnimationForAction(2);
+  //       handleVoiceTrack(actions[2].action);
+  //     },
+  //   },
+  //   {
+  //     name: "Step 4",
+  //     action: () => {
+  //       stopAnimationForAction(2);
+  //       startAnimationForAction(3);
+  //       handleVoiceTrack(actions[3].action);
+  //     },
+  //   },
+  //   {
+  //     name: "Step 5",
+  //     action: () => {
+  //       stopAnimationForAction(3);
+  //       setActionForArrowSvg("");
+  //       handleStopRecording();
+  //       stopCamera();
+  //     },
+  //   },
+  // ];
 
   const { stopCamera, startRecording } = useVideRecording(
     videoRef,
@@ -195,7 +296,12 @@ const ObjectDetection = ({ actions, handleGetRecordFile, startPlaySound }) => {
     setFirstClick(true);
 
     startRecording(streamRef.current, mediaRecorderRef, handleGetRecordFile);
-    handleSequencesForJustHint(stepsSequences);
+    // handleSequencesForJustHint(stepsSequences);
+    handleSequencesForJustHint(stepsSequences)
+      .then(() => console.log("All steps executed successfully"))
+      .catch((error) =>
+        console.error("An error occurred during step execution:", error)
+      );
   };
 
   const handleStopRecording = () => {
