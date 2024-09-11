@@ -127,15 +127,12 @@ const Post = () => {
       // if (event.origin !== "http://localhost:3001/kyc") {
       //   return; // Ignore messages from untrusted origins
       // }
-
-      console.log(event.data);
-
-      setToken(event.data.token);
-      setKycId(event.data.kycId);
-
-      setTimeout(() => {
-        handleNext(event.data.token, event.data.kycId);
-      }, 1500);
+      // console.log(event.data);
+      // setToken(event.data.token);
+      // setKycId(event.data.kycId);
+      // setTimeout(() => {
+      //   handleNext(event.data.token, event.data.kycId);
+      // }, 1500);
     };
 
     window.addEventListener("message", handleMessage);
