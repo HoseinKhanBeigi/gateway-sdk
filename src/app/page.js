@@ -305,7 +305,7 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
-      <Box sx={{ width: 400 }}>
+      <div style={{ width: 400 }}>
         <div className="video-container">
           <video
             ref={videoRef}
@@ -314,7 +314,7 @@ const Post = () => {
             autoPlay={true}
           />
         </div>
-      </Box>
+      </div>
       {/* {loading && <>loading...</>} */}
 
       {/* {notify && <>{notify}</>} */}
