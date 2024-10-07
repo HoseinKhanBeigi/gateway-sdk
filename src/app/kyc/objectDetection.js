@@ -50,8 +50,8 @@ const ObjectDetection = ({
   const mediaRecorderRef = useRef(null);
   const [errorPost, setErrorPost] = useState(false);
   const [actionForArrowSvg, setActionForArrowSvg] = useState("");
-  const successAudio = new Audio(`/success.mp3`);
-  const warningAudio = new Audio(`/warning.mp3`);
+  // const successAudio = new Audio(`/success.mp3`);
+  // const warningAudio = new Audio(`/warning.mp3`);
 
   const handleVoiceTrack = (action) => {
     return new Promise((resolve) => {
@@ -192,7 +192,7 @@ const ObjectDetection = ({
             setActionForArrowSvg("");
             handleGetRecordFile("", "finish");
             handleStopRecording();
-            successAudio.play();
+            // successAudio.play();
             stopCamera();
             resolve(); // Ensure the step resolves after timeout
           }, 2000); // 1-second delay before resolving

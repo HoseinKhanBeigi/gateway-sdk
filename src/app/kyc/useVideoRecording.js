@@ -39,7 +39,6 @@ export const useVideRecording = (videoRef, streamRef) => {
         height: { ideal: 360 }, // Lower height
         frameRate: { ideal: 15 }, // Lower frame rate
       },
-      audio: true, // Capture audio
     };
     const options = { mimeType: "video/webm; codecs=vp9" };
     const mediaRecorder = new MediaRecorder(stream, optionForSafari);
