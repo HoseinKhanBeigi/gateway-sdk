@@ -1,78 +1,36 @@
-import react, { useEffect, useRef } from "react";
+import react, { useEffect, useRef, useState } from "react";
 import loadFaceMesh from "./faceMesh";
 export const useFaceMesh = (
-  mediaRecorderRef,
   videoRef,
-  stateMachine,
-  containerRef,
-  setIsFaceInCorrectPosition,
-  currentStep,
-  setFirstStepCompleted,
-  streamRef,
-  handleSaveRecording
+  centerPointOfFace,
+  canvasRef,
+  containerRef
 ) => {
-  const setChunckVideo = useRef();
+  const [positionMessage, setPositionMessage] = useState({
+    message: "لطفا سر خود را در مرکز کادر سبز قرار دهید",
+    type: "warning",
+    position: "",
+  }); // Store the current position message
 
-  const startVideo = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      videoRef.current.srcObject = stream;
-      streamRef.current = stream;
-      // await new Promise((resolve) => (video.onloadedmetadata = resolve));
-      videoRef.current.play();
-    } catch (err) {
-      console.error("Error accessing the camera: ", err);
-    }
-  };
+  const [isMultipleHead, setIsMultipleHead] = useState(false);
+  const previousPosition = useRef(""); // Store the previous position
 
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-      // setIsCameraOn(false);
-    }
-  };
-
-  const startRecording = (stream) => {
-    const optionForSafari = {
-      mimeType: "video/mp4",
-    };
-    const options = { mimeType: "video/webm; codecs=vp9" };
-    const mediaRecorder = new MediaRecorder(stream, optionForSafari);
-    mediaRecorderRef.current = mediaRecorder;
-    mediaRecorderRef.current.start();
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        console.log(event.data);
-        setTimeout(() => {
-          handleSaveRecording(event.data);
-        }, 2000);
-        setChunckVideo.current = event.data;
-        testSetChunk = event.data;
-      }
-    };
-    // mediaRecorder.onstop = () => {
-    //   const blob = new Blob(recordedChunks, {
-    //     type: "video/mp4",
-    //   });
-    // };
-  };
   useEffect(() => {
-    containerRef.current.style.stroke = "#00db5e";
+    // centerPointOfFace.current.style.stroke = "#00db5e";
 
     const initializeFaceMesh = async () => {
       try {
         const FaceMesh = await loadFaceMesh();
         const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
         const faceMesh = new FaceMesh({
           locateFile: (file) =>
             `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
         });
 
         faceMesh.setOptions({
-          maxNumFaces: 1,
+          maxNumFaces: 3,
           refineLandmarks: true,
           minDetectionConfidence: 0.5,
           minTrackingConfidence: 0.5,
@@ -83,53 +41,122 @@ export const useFaceMesh = (
             results.multiFaceLandmarks &&
             results.multiFaceLandmarks.length > 0
           ) {
+            if (results.multiFaceLandmarks.length > 1) {
+              setIsMultipleHead(true);
+              // console.log("More than one face detected!");
+            } else if (results.multiFaceLandmarks.length === 1) {
+              setIsMultipleHead(false);
+              // console.log("One face detected.");
+            }
             const landmarks = results.multiFaceLandmarks[0];
-            const noseTip = landmarks[1]; // Nose tip
-            const leftEyebrow = landmarks[70]; // Left eyebrow
-            const rightEyebrow = landmarks[300]; // Right eyebrow
-            const chin = landmarks[152]; // Chin
-            const videoWidth = video.videoWidth;
-            let headPosition = "";
-            const midPointEyeBrow = {
-              x: (leftEyebrow.x + rightEyebrow.x) / 2,
-              y: (leftEyebrow.y + rightEyebrow.y) / 2,
+            const faceLandmarks = results.multiFaceLandmarks[0];
+            const noseLandmark = faceLandmarks[1]; // Nose tip position
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const faceMinX = Math.min(...faceLandmarks.map((l) => l.x));
+            const faceMaxX = Math.max(...faceLandmarks.map((l) => l.x));
+            const faceMinY = Math.min(...faceLandmarks.map((l) => l.y));
+            const faceMaxY = Math.max(...faceLandmarks.map((l) => l.y));
+            const gridWidth = (faceMaxX - faceMinX) / 2;
+            const gridHeight = (faceMaxY - faceMinY) / 2;
+            const scaleX = canvas.width;
+            const scaleY = canvas.height;
+            const convertToCanvasCoords = (landmark) => ({
+              x: landmark.x * scaleX,
+              y: landmark.y * scaleY,
+            });
+
+            const nosePosition = convertToCanvasCoords(noseLandmark);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Define grid lines
+
+            // for (let i = 1; i < 2; i++) {
+            //   const verticalLineX =
+            //     nosePosition.x - gridWidth * scaleX + i * gridWidth * scaleX;
+
+            //   ctx.beginPath();
+            //   ctx.moveTo(verticalLineX, faceMinY * scaleY);
+            //   ctx.lineTo(verticalLineX, faceMaxY * scaleY);
+            //   ctx.strokeStyle = "green";
+            //   ctx.lineWidth = 2;
+            //   ctx.stroke();
+            // }
+
+            let position = {
+              message: "سر خود را به سمت اشتباه گرفته اید",
+              position: "info",
+              type: "warning",
             };
 
-            const sideLeftFaceX =
-              noseTip.x * videoWidth - leftEyebrow.x * videoWidth;
+            for (let i = 1; i < 2; i++) {
+              const horizontalLineY =
+                nosePosition.y - gridHeight * scaleY + i * gridHeight * scaleY;
 
-            const sideRightFaceX = Math.abs(
-              noseTip.x * videoWidth - rightEyebrow.x * videoWidth
-            );
+              const verticalLineX =
+                nosePosition.x - gridWidth * scaleX + i * gridWidth * scaleX;
 
-            const sideUpFaceUpY = midPointEyeBrow.y;
-            const sideDownFaceY = Math.abs(chin.y);
-            const betNoisAndUpSide = Math.abs(
-              Math.floor(noseTip.y * 10) - Math.floor(sideUpFaceUpY * 10)
-            );
-            const betNoisAndDownSide = Math.abs(
-              Math.floor(sideDownFaceY * 10) - Math.floor(noseTip.y * 10)
-            );
+              if (
+                horizontalLineY >= 68 &&
+                horizontalLineY <= 82 &&
+                verticalLineX <= 155 &&
+                verticalLineX >= 145
+              ) {
+                position = {
+                  position: "center",
+                  message: "صحیح است",
+                  type: "success",
+                };
+                containerRef.current.style.stroke = "#00db5e";
+              } else if (verticalLineX > 155) {
+                position = {
+                  message: "سر خود را به سمت چپ گرفته اید",
+                  position: "left",
+                  type: "error",
+                };
+              } else if (verticalLineX < 145) {
+                position = {
+                  message: "سر خود را به سمت راست گرفته اید",
+                  position: "right",
+                  type: "error",
+                };
+              } else if (horizontalLineY > 82) {
+                position = {
+                  message: "سر خود را به سمت پایین گرفته اید",
+                  position: "down",
+                  type: "error",
+                };
+              } else if (horizontalLineY < 68) {
+                position = {
+                  message: "سر خود را به سمت بالا گرفته اید",
+                  position: "up",
+                  type: "error",
+                };
+              }
+            }
+            let notify = {
+              message: "سر خود را به سمت اشتباه گرفته اید",
+              position: "info",
+              type: "warning",
+            };
 
-            if (
-              Math.abs(sideRightFaceX - sideLeftFaceX) < 5 &&
-              (betNoisAndUpSide === 1 || betNoisAndUpSide === 2) &&
-              betNoisAndDownSide === 2
-            ) {
-              headPosition = "center";
-              // containerRef.current.style.stroke = "#00db5e";
-              stateMachine.current = headPosition;
-              setFirstStepCompleted(true);
-            } else {
-              // containerRef.current.style.stroke = "#00db5e";
+            // Only update if the position has changed
+            if (position.position !== previousPosition.current) {
+              previousPosition.current = position.position;
+              setPositionMessage(position); // Update the message state
             }
 
-            // Check if the head position matches the current step exactly
-            if (currentStep && headPosition === currentStep) {
-              setIsFaceInCorrectPosition(true);
-            } else {
-              setIsFaceInCorrectPosition(false);
-            }
+            // for (let i = 1; i < 2; i++) {
+            //   const horizontalLineY =
+            //     nosePosition.y - gridHeight * scaleY + i * gridHeight * scaleY;
+
+            //   ctx.beginPath();
+            //   ctx.moveTo(faceMinX * scaleX, horizontalLineY);
+            //   ctx.lineTo(faceMaxX * scaleX, horizontalLineY);
+            //   ctx.strokeStyle = "green";
+            //   ctx.lineWidth = 2;
+            //   ctx.stroke();
+            // }
           }
         };
 
@@ -151,5 +178,5 @@ export const useFaceMesh = (
     initializeFaceMesh();
   }, []);
 
-  return { stopCamera, startVideo, startRecording };
+  return { message: positionMessage, isMultipleHead };
 };

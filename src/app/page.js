@@ -3,9 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
 import CacheInput from "./kyc/cacheInput";
 
-// import { useParams } from "next/navigation";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { notFound } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
@@ -14,36 +12,56 @@ import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import Typography from "@mui/material/Typography";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { useRouter } from "next/navigation";
+// import { useFFmpeg } from "./kyc/useFFmpeg";
 
 import { Grid } from "@mui/material";
 
 import "./kyc/index.scss";
 import ObjectDetection from "./kyc/objectDetection";
-
-// Create an RTL theme
-const theme = createTheme({
-  direction: "rtl",
-});
+import HandGestures from "./kyc/HandGestures";
 
 const Post = () => {
+  const [frontPridict, setFrontPredict] = useState("");
+  const [kycType, setkycType] = useState("");
+  const [activeStep, setActiveStep] = React.useState(0);
   const [token, setToken] = useState("");
   const [kycId, setKycId] = useState("");
   const [actions, setActions] = useState([]);
   const [callbackUrl, setCallBackUrl] = useState("");
+  const [reduceSizeFile, setRedueSizeFile] = useState(false);
   const [startPlaySound, setStartPlaySound] = useState();
   const mediaRecorderRef = useRef("");
   const [progress, setProgress] = React.useState(false);
-  const [loadPage, setLoadPage] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
+  const [isUploadAgain, setIsFileUploadAgain] = useState(true);
+  const [retryCount, setRetryCount] = useState(0); // Track retries
+  const maxRetries = 5; // Set a maximum number of retries
+  const [errorMessage, setErrorMessage] = useState(""); // State to store error messages
   const [isGetFile, setIsGetFile] = useState(false);
-  const baseUrl = "https://api.levants.io";
-  const handleGetRecordFile = (file) => {
+
+  const [isMultipleFace, setIsMultipleFace] = useState(false);
+  // const ffmpegRef = useRef(new FFmpeg());
+  const videoRef = useRef(null);
+  const messageRef = useRef(null);
+
+  const baseUrl = process.env.BASEURL;
+  const handleGetRecordFile = (file, lastStep) => {
+    const blob = new Blob([file], {
+      type: "video/mp4",
+    });
+
     mediaRecorderRef.current = file;
-    setIsGetFile(true);
+    // setRedueSizeFile(true);
+    // transcode(file).then((e) => {
+    //   // setRedueSizeFile(false);
+    //   // mediaRecorderRef.current = e;
+    // });
+
+    if (lastStep === "finish") {
+      setIsGetFile(true);
+    }
   };
+
   const steps = [
     {
       label: "راهنما",
@@ -61,9 +79,16 @@ const Post = () => {
       label: "ضبط ویدیو",
       description: () => {
         return (
-          <div>
-            {actions.length > 0 && (
+          <div style={{ width: "350px" }}>
+            {actions.length > 0 && kycType === "HEAD_POSITIONING" ? (
               <ObjectDetection
+                startPlaySound={startPlaySound}
+                actions={actions}
+                handleGetRecordFile={handleGetRecordFile}
+                handleGetfrontPredit={handleGetfrontPredit}
+              />
+            ) : (
+              <HandGestures
                 startPlaySound={startPlaySound}
                 actions={actions}
                 handleGetRecordFile={handleGetRecordFile}
@@ -85,175 +110,196 @@ const Post = () => {
     },
   ];
 
-  // JSON.stringify({
-  //   client_id: "api-client-levant",
-  //   client_secret: "59c24382-18ac-41e5-9141-ef2dbcd2e8de",
-  //   grant_type: "client_credentials",
-  //   scope: "roles",
-  // });
-
-  // const getToken = async (e) => {
-  //   setLoadingGetId(true);
-  //   try {
-  //     const response = await fetch(`${baseUrl}/v1/auth/token`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         client_id: "api-client-demo",
-  //         client_secret: "21ba7936-ea0c-45ce-996d-887712f79799",
-  //         grant_type: "client_credentials",
-  //         scope: "roles",
-  //       }),
-  //     });
-
-  //     // Check if the response is okay
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const json = await response.json();
-  //     return json;
-  //     // setToken(json.access_token);
-  //   } catch (error) {
-  //     console.error("Error downloading the file:", error);
-  //   }
-  // };
-
   useEffect(() => {
-    // Listen for the postMessage event to receive token and kycId
-    const handleMessage = async (event) => {
-      // if (event.origin !== "http://localhost:3001/kyc") {
-      //   return; // Ignore messages from untrusted origins
-      // }
-
-      console.log(event.data);
-
+    const handleMessage = (event) => {
       setToken(event.data.token);
       setKycId(event.data.kycId);
-
-      setTimeout(() => {
-        handleNext(event.data.token, event.data.kycId);
-      }, 1500);
     };
 
     window.addEventListener("message", handleMessage);
 
-    // Cleanup event listener when component unmounts
+    // Cleanup event listener when the component unmounts
     return () => {
       window.removeEventListener("message", handleMessage);
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("/api/submit", {
+          method: "GET",
+        });
+        if (!res.ok) {
+          throw new Error(`Error fetching data: ${res.status}`);
+        }
+        const result = await res.json();
+        setToken(result.token);
+        setKycId(result.kycId);
+      } catch (error) {
+        console.error("Error fetching stored data:", error);
+        // setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (token && kycId) {
+      setRetryCount(0); // Reset retry count
+      handleFetchActions(token, kycId);
+    }
   }, [token, kycId]);
-  const handleSendVideo = (token, kycId) => {
-    setProgress(true);
+
+  const handleGetfrontPredit = (value) => {
+    setFrontPredict(value);
+  };
+
+  // const { transcode, progressCompress } = useFFmpeg();
+
+  const handleSendVideo = async (token, kycId22) => {
+    setProgress(true); // Start progress
+    // Play thank-you audio
     const audio = new Audio(`/thanks.mp3`);
     audio.play();
     const typeForSafari = "video/mp4";
-    const blob = new Blob([mediaRecorderRef.current], {
+    const mediaData = mediaRecorderRef.current; // Ensure this contains the correct media data
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+
+    const blob = new Blob([mediaData], {
       type: typeForSafari,
     });
+
+    setRedueSizeFile(false);
+    // const link = document.createElement("a");
+    // link.href = window.URL.createObjectURL(blob); // e should be a blob or File object (representing the video)
+    // link.download = `test.mp4`; // Download as a video file, adjust extension as needed
+    // document.body.appendChild(link); // Append to the body to make it part of the DOM
+    // link.click(); // Programmatically click the link to trigger the download
+    // document.body.removeChild(link); // Remove the link from the DOM
+    // window.URL.revokeObjectURL(link.href);
 
     if (blob) {
       const formData = new FormData();
       formData.append("file", blob, "recorded-video.mp4");
+
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "multipart/form-data", // Use multipart for file upload
           charset: "utf-8",
+          // "front-predit": frontPridict.join(","),
         },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          console.log(`Upload Progress: ${percentCompleted}%`);
+        },
+        timeout: 60000, // Optional: Increase timeout for slower networks
       };
 
+      // Make the POST request to upload the video
+      const uaturl = "https://apipanel.uat.kian.digital/2";
+      const local = "http://localhost:3001/2";
+      const mainCall = `${callbackUrl}`;
       axios
         .post(`${baseUrl}/v2/kyc/submit/${kycId}`, formData, config)
-        .finally((res) => {
-          setProgress(false);
-          setActiveStep((prevActiveStep) => prevActiveStep + 1);
-          // router.push(`${callbackUrl}${kycId}`);
-          window.location.assign(`https://${callbackUrl}${kycId}`);
+        .then((response) => {
+          // handleSubmit(uaturl);
+          window.location.href = mainCall;
+        })
+        .catch((error) => {
+          alert(error);
+          // console.error("Error uploading the file:", error);
+          alert("File upload failed, please try again.");
+          setIsFileUploadAgain(false);
+        })
+        .finally(() => {
+          setProgress(false); // End progress indicator
         });
+    } else {
+      console.error("Failed to create Blob for the video.");
     }
   };
+  // Fetch API logic with retry mechanism
+  const handleFetchActions = async (token, kycId) => {
+    setLoading(true); // Start showing the spinner
+    setErrorMessage("");
 
-  const [loadingGetId, setLoadingGetId] = useState(false);
-  const [notify, setNotife] = useState("");
-
-  const handleNext = async (token, kycId) => {
     try {
       const response = await fetch(`${baseUrl}/v2/kyc/random/action/${kycId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-          "callback-url": "callback-url",
+          "callback-url": "default",
         },
       });
 
-      // Check if the response is okay
-      if (!response.ok) {
-        setLoadingGetId(false);
-        setLoading(false);
-        setNotife("لطفا به صفحه ی اصلی بازگردید و دوباره ورود کنید");
-        throw new Error("Network response was not ok");
+      // Check if the response is okay (status 200)
+      if (response.ok) {
+        const json = await response.json();
+        console.log(json, "response");
+        setkycType(json.kycType);
+        const actionsArray = json.action.split(",");
+        console.log(json.callbackUrl, "json.callbackUrl");
+        setCallBackUrl(json.callbackUrl);
+
+        // Map actions to corresponding meanings
+        const actionMappings = {
+          c: "center",
+          l: "left",
+          u: "up",
+          d: "down",
+          r: "right",
+          1: "one",
+          2: "two",
+          3: "three",
+          4: "four",
+          5: "five",
+        };
+        const mappedActions = actionsArray.map(
+          (action) => actionMappings[action]
+        );
+
+        const mapActionWithTitle = mappedActions.map((e) => {
+          if (e === "center") return { title: "مرکز", action: e };
+          if (e === "left") return { title: "چپ", action: e };
+          if (e === "right") return { title: "راست", action: e };
+          if (e === "down") return { title: "پایین", action: e };
+          if (e === "up") return { title: "بالا", action: e };
+          if (e === "one") return { title: "یک", action: e };
+          if (e === "two") return { title: "دو", action: e };
+          if (e === "three") return { title: "سه", action: e };
+          if (e === "four") return { title: "چهار", action: e };
+          if (e === "five") return { title: "پنج", action: e };
+        });
+
+        setActions(mapActionWithTitle);
+        setLoading(false); // Stop loading spinner
+      } else {
+        // Retry logic in case the response is not 200
+        throw new Error("Failed to fetch actions, retrying...");
       }
-      setLoadingGetId(false);
-      setLoading(false);
-      const json = await response.json();
-      const actionsArray = json.action.split(",");
-      setCallBackUrl(json.callbackUrl);
-
-      // Step 2: Create a dictionary for mapping
-      const actionMappings = {
-        c: "center",
-        l: "left",
-        u: "up",
-        d: "down",
-        r: "right",
-      };
-      // Step 3: Map array to corresponding meanings
-      const mappedActions = actionsArray.map(
-        (action) => actionMappings[action]
-      );
-      const mapActionWithTitle = mappedActions.map((e) => {
-        if (e === "center") {
-          return {
-            title: "مرکز",
-            action: e,
-          };
-        } else if (e === "left") {
-          return {
-            title: "چپ",
-            action: e,
-          };
-        } else if (e === "right") {
-          return {
-            title: "راست",
-            action: e,
-          };
-        } else if (e === "down") {
-          return {
-            title: "پایین",
-            action: e,
-          };
-        } else if (e === "up") {
-          return {
-            title: "بالا",
-            action: e,
-          };
-        }
-      });
-
-      setActions(mapActionWithTitle);
     } catch (error) {
-      setLoadingGetId(false);
-      console.log(error);
+      alert(error);
+      console.log(error, "Liveness Detection");
+      if (retryCount < maxRetries) {
+        console.warn(`Retrying... (${retryCount + 1}/${maxRetries})`);
+        setRetryCount(retryCount + 1);
+        // handleFetchActions(token, kycId); // Retry the fetch
+      } else {
+        alert(error);
+        console.error("Max retries reached, could not fetch actions.", error);
+        setErrorMessage("error");
+        setLoading(false); // Stop loading spinner after max retries
+      }
     }
   };
 
-  const [activeStep, setActiveStep] = React.useState(0);
-
-  const handleNext1 = (index, token) => {
+  const handleNextStep = (index, token) => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (index === 0) {
       const audio = new Audio(`/startForCamera.mp3`);
@@ -271,13 +317,32 @@ const Post = () => {
     };
   }, []);
 
-  useEffect(() => {
-    setLoadPage(true);
+  function redirectToPost(url, data) {
+    // Create a form element
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = url;
 
-    // window.addEventListener("DOMContentLoaded", () => {
+    // Add data as hidden input fields
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = data[key];
+        form.appendChild(input);
+      }
+    }
 
-    // });
-  }, [loadPage]);
+    // Append the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  function handleSubmit(url, data) {
+    const data1 = {};
+    redirectToPost(url, data1);
+  }
 
   return (
     <Grid
@@ -286,30 +351,34 @@ const Post = () => {
       alignItems={"center"}
       height={"100vh"}
     >
-      {/* {loading && <>loading...</>} */}
-      {kycId && token && loadPage && !loading && (
+      {loading ? (
+        <div className="spinner">
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress />
+          </Box>
+        </div>
+      ) : errorMessage ? (
+        <div className="error">
+          <p>Error: {404}</p>
+        </div>
+      ) : (
         <CacheInput>
           <Box sx={{ maxWidth: 400 }} dir="rtl">
             <Stepper activeStep={activeStep} orientation="vertical">
               {steps.map((step, index) => (
                 <Step key={step.label}>
-                  <StepLabel
-                    style={{ width: "10px" }}
-                    // optional={
-                    //   index === 2 ? (
-                    //     <Typography variant="caption">Last step</Typography>
-                    //   ) : null
-                    // }
-                  >
-                    {step.label}
-                  </StepLabel>
+                  <StepLabel style={{ width: "10px" }}>{step.label}</StepLabel>
                   <StepContent TransitionProps={{ unmountOnExit: true }}>
                     {desc(step)}
                     <Box sx={{ mb: 2 }}>
                       <div>
                         <LoadingButton
                           variant="contained"
-                          onClick={() => handleNext1(index, token, kycId)}
+                          onClick={
+                            !isUploadAgain
+                              ? () => handleSendVideo(token, kycId)
+                              : () => handleNextStep(index, token, kycId)
+                          }
                           sx={{
                             mt: 1,
                             mr: 1,
@@ -317,40 +386,24 @@ const Post = () => {
                               index === 1 && !isGetFile ? "none" : "block",
                           }}
                           loading={index === steps.length - 1 && progress}
-                          disabled={
-                            index === steps.length - 1 ||
-                            (index === 1 && !isGetFile)
-                          }
+                          disabled={index === 1 && !isGetFile}
                         >
-                          {index === steps.length - 1 ? "پایان" : "ادامه"}
+                          {!isUploadAgain
+                            ? "آپلود دوباره"
+                            : index === steps.length - 1
+                            ? "پایان"
+                            : "ادامه"}
                         </LoadingButton>
-                        {/* <Button
-                      disabled={index === 0}
-                      onClick={handleBack}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      Back
-                    </Button> */}
+                        {/* {index === steps.length - 1 && progressCompress} */}
                       </div>
                     </Box>
                   </StepContent>
                 </Step>
               ))}
             </Stepper>
-            {/* {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3 }}>
-            <Typography>All steps completed - you&apos;re finished</Typography>
-            <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-              Reset
-            </Button>
-          </Paper>
-        )} */}
           </Box>
         </CacheInput>
       )}
-
-      {/* {notify && <>{notify}</>} */}
-      {/* {!kycId && !token && !loading && !notify && <>page not found</>} */}
     </Grid>
   );
 };

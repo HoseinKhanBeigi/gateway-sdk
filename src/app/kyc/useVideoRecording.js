@@ -1,20 +1,6 @@
 import { useRef } from "react";
 export const useVideRecording = (videoRef, streamRef) => {
   const setChunckVideo = useRef();
-  const startVideo = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      videoRef.current.srcObject = stream;
-      streamRef.current = stream;
-      // await new Promise((resolve) => (video.onloadedmetadata = resolve));
-      videoRef.current.play();
-      // setupMediaRecorder(stream, mediaRecorderRef);
-    } catch (err) {
-      console.error("Error accessing the camera: ", err);
-    }
-  };
 
   const stopCamera = () => {
     if (streamRef.current) {
@@ -24,10 +10,36 @@ export const useVideRecording = (videoRef, streamRef) => {
     }
   };
 
+  function getSupportedMimeType() {
+    if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) {
+      console.log("video/webm;codecs=vp9");
+    } else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) {
+      console.log("video/webm;codecs=vp8"); // VP8 fallback
+    } else if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1")) {
+      console.log("video/mp4;codecs=avc1"); // H.264 fallback
+    } else {
+      console.log("No supported codec found");
+    }
+  }
+
   const startRecording = (stream, mediaRecorderRef, handleGetRecordFile) => {
+    // getSupportedMimeType();
     const optionForSafari = {
-      mimeType: "video/mp4",
-      // videoBitsPerSecond: 100000,
+      mimeType:
+        navigator.userAgent.toLowerCase().indexOf("firefox") > -1
+          ? "video/webm;codecs=vp8"
+          : "video/mp4",
+
+      videoBitsPerSecond: 2500000,
+    };
+
+    const videoConstraints = {
+      video: {
+        width: { ideal: 640 }, // Lower width
+        height: { ideal: 360 }, // Lower height
+        frameRate: { ideal: 15 }, // Lower frame rate
+      },
+      audio: true, // Capture audio
     };
     const options = { mimeType: "video/webm; codecs=vp9" };
     const mediaRecorder = new MediaRecorder(stream, optionForSafari);
@@ -35,6 +47,7 @@ export const useVideRecording = (videoRef, streamRef) => {
     mediaRecorderRef.current.start();
 
     mediaRecorder.ondataavailable = (event) => {
+      console.log(event.data);
       if (event.data.size > 0) {
         handleGetRecordFile(event.data);
       }
@@ -42,7 +55,6 @@ export const useVideRecording = (videoRef, streamRef) => {
   };
 
   return {
-    startVideo,
     stopCamera,
     startRecording,
     setChunckVideo,

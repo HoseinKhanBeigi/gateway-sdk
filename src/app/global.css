@@ -1,0 +1,26 @@
+/* BEGIN Bold */
+@font-face {
+  font-family: "IranianSansBold";
+  src: url("/IRANSans4/IRANSans_Bold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* END Bold */
+/* BEGIN Regular */
+@font-face {
+  font-family: "IranianSans";
+  src: url("/IRANSans4/IRANSans_Medium.ttf") format("truetype"),
+    url("/IRANSans4/WebFonts/fonts/eot/IRANSansWeb_Medium.eot") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* END Regular */
+body {
+  margin: 0;
+}
+
+* {
+  font-family: IranianSans !important;
+}

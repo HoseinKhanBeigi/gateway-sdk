@@ -18,27 +18,6 @@
   pointer-events: none;
 }
 
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 300px;
-  border: 1px solid transparent;
-  border-radius: 37px;
-  transition: box-shadow 0.5s ease-in-out;
-}
-
-video,
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  object-fit: cover;
-  transform: scaleX(-1);
-}
-
 .textfield-input {
   border: none;
   outline: none;
