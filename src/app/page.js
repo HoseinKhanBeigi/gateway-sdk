@@ -224,19 +224,22 @@ const Post = () => {
     }
   };
   // Fetch API logic with retry mechanism
-  const handleFetchActions = async (token, kycId) => {
+  const handleFetchActions = async (token, kycId1) => {
     setLoading(true); // Start showing the spinner
     setErrorMessage("");
 
     try {
-      const response = await fetch(`${baseUrl}/v2/kyc/random/action/${kycId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          "callback-url": "default",
-        },
-      });
+      const response = await fetch(
+        `${baseUrl}/v2/kyc/random/action/${kycId1}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "callback-url": "default",
+          },
+        }
+      );
 
       // Check if the response is okay (status 200)
       if (response.ok) {
