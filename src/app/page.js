@@ -44,7 +44,7 @@ const Post = () => {
   const videoRef = useRef(null);
   const messageRef = useRef(null);
 
-  const baseUrl = process.env.BASEURL;
+  const baseUrl = process.env.BASEURL || "https://uat.kian.digital/api-proxy";
   const handleGetRecordFile = (file, lastStep) => {
     const blob = new Blob([file], {
       type: "video/mp4",
