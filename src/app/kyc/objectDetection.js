@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import Image from "next/image";
 import IconButton from "@mui/material/IconButton";
-import Notifier from "../notify";
+// import Notifier from "../notify";
 import { Countdown } from "./countdown";
 import { FaceSvg } from "./faceSvg";
 import {
