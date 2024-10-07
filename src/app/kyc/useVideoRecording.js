@@ -28,7 +28,7 @@ export const useVideRecording = (videoRef, streamRef) => {
       mimeType:
         navigator.userAgent.toLowerCase().indexOf("firefox") > -1
           ? "video/webm;codecs=vp8"
-          : "video/webm",
+          : "video/mp4",
 
       videoBitsPerSecond: 2500000,
     };
