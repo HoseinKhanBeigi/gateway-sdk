@@ -12,7 +12,6 @@ export const useFaceMesh = (
     position: "",
   }); // Store the current position message
 
-  const [isMultipleHead, setIsMultipleHead] = useState(false);
   const previousPosition = useRef(""); // Store the previous position
 
   useEffect(() => {
@@ -41,13 +40,11 @@ export const useFaceMesh = (
             results.multiFaceLandmarks &&
             results.multiFaceLandmarks.length > 0
           ) {
-            if (results.multiFaceLandmarks.length > 1) {
-              setIsMultipleHead(true);
-              // console.log("More than one face detected!");
-            } else if (results.multiFaceLandmarks.length === 1) {
-              setIsMultipleHead(false);
-              // console.log("One face detected.");
-            }
+            // if (results.multiFaceLandmarks.length > 1) {
+            //   // console.log("More than one face detected!");
+            // } else if (results.multiFaceLandmarks.length === 1) {
+            //   // console.log("One face detected.");
+            // }
             const landmarks = results.multiFaceLandmarks[0];
             const faceLandmarks = results.multiFaceLandmarks[0];
             const noseLandmark = faceLandmarks[1]; // Nose tip position
@@ -178,5 +175,5 @@ export const useFaceMesh = (
     initializeFaceMesh();
   }, []);
 
-  return { message: positionMessage, isMultipleHead };
+  return { message: positionMessage };
 };

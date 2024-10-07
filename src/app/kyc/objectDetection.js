@@ -201,7 +201,7 @@ const ObjectDetection = ({
     },
   ];
 
-  const { message, isMultipleHead } = useFaceMesh(
+  const { message } = useFaceMesh(
     videoRef,
     centerPointOfFace,
     canvasRef,
@@ -296,53 +296,6 @@ const ObjectDetection = ({
       handleGetfrontPredit(shortArr);
     }
   }, [firstClick, message.position]);
-
-  useEffect(() => {
-    if (message.position === "center" && !isMultipleHead && !open) {
-      // setIsHeadCenter(true);
-    }
-  }, [message.position]);
-
-  useEffect(() => {
-    if (isMultipleHead && !firstClick && !interruptDialogOpen && !open) {
-      // warningAudio.play();
-      setMultipleHeadDialogOpen(true);
-    } else if (isMultipleHead && firstClick) {
-      // warningAudio.play();
-      handleInterrupt();
-      setInterruptDialogOpen(true);
-    } else {
-      setMultipleHeadDialogOpen(false);
-    }
-  }, [isMultipleHead]);
-
-  const multipleHeadWarning = useMemo(() => {
-    if (multipleHeadDialogOpen) {
-      return (
-        <CustomizedDialogs
-          open={multipleHeadDialogOpen}
-          setOpen={setOpen}
-          text={"تنها یک نفر در تصویر باشد"}
-        />
-      );
-    }
-  }, [multipleHeadDialogOpen]);
-
-  const handleInterrupt = () => {
-    stopAnimationForAction(1);
-    stopAnimationForAction(2);
-    stopAnimationForAction(3);
-    stopAnimationForAction(0);
-    setActionForArrowSvg("");
-    interruptSequence();
-    handleStopRecording();
-    boxRef.current[0].classList.remove("active");
-    boxRef.current[1].classList.remove("active");
-    boxRef.current[2].classList.remove("active");
-    boxRef.current[3].classList.remove("active");
-    setFirstClick(false);
-    setInterruptDialogOpen(false);
-  };
 
   useEffect(() => {
     setOpen(true);
@@ -560,7 +513,6 @@ const ObjectDetection = ({
           }
         />
       </div>
-      {/* {!isHeadCenter && <Notifier messages={[notify]} />} */}
     </>
   );
 };
