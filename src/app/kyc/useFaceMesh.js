@@ -166,7 +166,6 @@ export const useFaceMesh = (
           };
           detect();
         });
-        await startVideo();
       } catch (error) {
         console.error(error);
       }
