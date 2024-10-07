@@ -96,10 +96,6 @@ const ObjectDetection = ({
 
   const handleSequencesForJustHint = async (steps) => {
     for (const step of steps) {
-      if (cancelSequenceRef.current) {
-        console.log("Sequence was interrupted");
-        break; // Stop executing further steps if canceled
-      }
       try {
         await step.action(); // Execute the action, allowing for async operations
       } catch (error) {
