@@ -110,19 +110,19 @@ const Post = () => {
     },
   ];
 
-  useEffect(() => {
-    const handleMessage = (event) => {
-      setToken(event.data.token);
-      setKycId(event.data.kycId);
-    };
+  // useEffect(() => {
+  //   const handleMessage = (event) => {
+  //     setToken(event.data.token);
+  //     setKycId(event.data.kycId);
+  //   };
 
-    window.addEventListener("message", handleMessage);
+  //   window.addEventListener("message", handleMessage);
 
-    // Cleanup event listener when the component unmounts
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
-  }, []);
+  //   // Cleanup event listener when the component unmounts
+  //   return () => {
+  //     window.removeEventListener("message", handleMessage);
+  //   };
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
