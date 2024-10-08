@@ -339,7 +339,6 @@ const ObjectDetection = ({
               <LocalSeeIcon />
             </IconButton>
           )}
-          {!open && <Countdown onComplete={handleStartAction} />}
 
           {actionForArrowSvg === "right" && (
             <svg
