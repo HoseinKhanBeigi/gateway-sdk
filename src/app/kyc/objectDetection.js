@@ -339,6 +339,7 @@ const ObjectDetection = ({
               <LocalSeeIcon />
             </IconButton>
           )}
+          {!open && <Countdown onComplete={handleStartAction} />}
 
           {actionForArrowSvg === "right" && (
             <svg
@@ -493,7 +494,7 @@ const ObjectDetection = ({
             <Button
               variant="outlined"
               onClick={handleStartRecording}
-              disabled={!isHeadCenter}
+              // disabled={!isHeadCenter}
             >
               شروع
             </Button>

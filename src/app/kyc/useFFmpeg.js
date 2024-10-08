@@ -7,7 +7,7 @@ import { fetchFile, toBlobURL } from "@ffmpeg/util";
 export function useFFmpeg() {
   const [loaded, setLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [progressCompress, setProgress] = useState(0); // Add progress state
+  const [progressCompress, setProgress] = useState(0); // Track progress
   const [message, setMessage] = useState("");
   const ffmpegRef = useRef(null);
 
@@ -21,14 +21,19 @@ export function useFFmpeg() {
       ffmpeg.on("log", ({ message }) => {
         setMessage(message);
 
-        // Parse log messages to update progress percentage
-        const timeMatch = message.match(/time=\s*(\d+:\d+:\d+)/);
-        console.log(timeMatch[1]);
-        setProgress(timeMatch[1]);
+        // Progress estimation based on FFmpeg log output (extracting percentage)
+        const timeMatch = message.match(/time=(\d+:\d+:\d+.\d+)/);
+        if (timeMatch) {
+          const [hours, minutes, seconds] = timeMatch[1].split(":");
+          const totalSeconds =
+            +hours * 3600 + +minutes * 60 + parseFloat(seconds);
+          // Here, replace `estimatedTotalDuration` with the estimated duration in seconds of the input file
+          const progress = (totalSeconds / estimatedTotalDuration) * 100;
+          setProgress(progress);
+        }
       });
 
       const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
-
       await ffmpeg.load({
         coreURL: await toBlobURL(
           `${baseURL}/ffmpeg-core.js`,
@@ -49,14 +54,15 @@ export function useFFmpeg() {
 
   const transcode = async (inputFile) => {
     const ffmpeg = ffmpegRef.current;
+    setProgress(0); // Reset progress before starting transcoding
 
-    console.log(inputFile);
-    setProgress(0); // Reset progress before starting the transcoding
+    // Load the file as an ArrayBuffer
+    const arrayBuffer = await fetchFile(inputFile);
 
-    // Write the input file to FFmpeg's virtual file system
-    await ffmpeg.writeFile("input.mp4", await fetchFile(inputFile));
+    // Write the ArrayBuffer to FFmpeg's virtual filesystem
+    await ffmpeg.writeFile("input.mp4", new Uint8Array(arrayBuffer));
 
-    // Run the FFmpeg command to transcode the video with progress logging
+    // Run FFmpeg command to transcode video with logging enabled
     await ffmpeg.exec([
       "-i",
       "input.mp4",
@@ -73,11 +79,11 @@ export function useFFmpeg() {
       "output.mp4",
     ]);
 
-    // Read the output file from FFmpeg's virtual file system
-    const data = await ffmpeg.readFile("output.mp4");
+    // Read the output file from FFmpeg's virtual filesystem
+    const outputData = await ffmpeg.readFile("output.mp4");
 
-    // Return the transcoded video as a Blob
-    return new Blob([data.buffer], { type: "video/mp4" });
+    // Create a Blob from the transcoded video data
+    return new Blob([outputData.buffer], { type: "video/mp4" });
   };
 
   return {
