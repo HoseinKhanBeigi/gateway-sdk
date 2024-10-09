@@ -50,12 +50,12 @@ const Post = () => {
       type: "video/mp4",
     });
 
-    mediaRecorderRef.current = file;
-    // setRedueSizeFile(true);
-    // transcode(file).then((e) => {
-    //   // setRedueSizeFile(false);
-    //   // mediaRecorderRef.current = e;
-    // });
+    // mediaRecorderRef.current = file;
+    setRedueSizeFile(true);
+    transcode(file).then((e) => {
+      setRedueSizeFile(false);
+      mediaRecorderRef.current = e;
+    });
 
     if (lastStep === "finish") {
       setIsGetFile(true);
@@ -171,7 +171,7 @@ const Post = () => {
       type: typeForSafari,
     });
 
-    setRedueSizeFile(false);
+    // setRedueSizeFile(false);
     // const link = document.createElement("a");
     // link.href = window.URL.createObjectURL(blob); // e should be a blob or File object (representing the video)
     // link.download = `test.mp4`; // Download as a video file, adjust extension as needed
@@ -388,8 +388,13 @@ const Post = () => {
                             display:
                               index === 1 && !isGetFile ? "none" : "block",
                           }}
-                          loading={index === steps.length - 1 && progress}
-                          disabled={index === 1 && !isGetFile}
+                          loading={
+                            (index === steps.length - 1 && progress) ||
+                            reduceSizeFile
+                          }
+                          disabled={
+                            (index === 1 && !isGetFile) || reduceSizeFile
+                          }
                         >
                           {!isUploadAgain
                             ? "آپلود دوباره"

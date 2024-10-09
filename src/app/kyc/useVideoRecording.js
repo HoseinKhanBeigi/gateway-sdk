@@ -21,14 +21,14 @@ export const useVideRecording = (videoRef, streamRef) => {
       console.log("No supported codec found");
     }
   }
-
+  // video/mp4
   const startRecording = (stream, mediaRecorderRef, handleGetRecordFile) => {
     // getSupportedMimeType();
     const optionForSafari = {
       mimeType:
         navigator.userAgent.toLowerCase().indexOf("firefox") > -1
           ? "video/webm;codecs=vp8"
-          : "video/mp4",
+          : "video/webm;codecs=vp8",
 
       videoBitsPerSecond: 2500000,
     };
