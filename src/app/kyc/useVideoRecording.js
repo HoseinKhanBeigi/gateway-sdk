@@ -24,11 +24,16 @@ export const useVideRecording = (videoRef, streamRef) => {
   // video/mp4
   const startRecording = (stream, mediaRecorderRef, handleGetRecordFile) => {
     // getSupportedMimeType();
+    const userAgent = navigator.userAgent.toLowerCase();
+
     const optionForSafari = {
-      mimeType:
-        navigator.userAgent.toLowerCase().indexOf("firefox") > -1
-          ? "video/webm;codecs=vp8"
-          : "video/mp4; codecs=h264",
+      mimeType: userAgent.includes("firefox")
+        ? "video/webm;codecs=vp8"
+        : userAgent.includes("iphone") ||
+          userAgent.includes("ipad") ||
+          userAgent.includes("ipod")
+        ? "video/mp4"
+        : "video/webm;codecs=vp8",
 
       videoBitsPerSecond: 2500000,
     };

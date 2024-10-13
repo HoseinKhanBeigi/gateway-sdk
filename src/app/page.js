@@ -208,7 +208,7 @@ const Post = () => {
         .post(`${baseUrl}/v2/kyc/submit/${kycId}`, formData, config)
         .then((response) => {
           // handleSubmit(uaturl);
-          window.location.href = mainCall;
+          window.location.href = "https://customer-sdk.vercel.app/2";
         })
         .catch((error) => {
           alert(error);
