@@ -388,13 +388,8 @@ const Post = () => {
                             display:
                               index === 1 && !isGetFile ? "none" : "block",
                           }}
-                          loading={
-                            (index === steps.length - 1 && progress) ||
-                            reduceSizeFile
-                          }
-                          disabled={
-                            (index === 1 && !isGetFile) || reduceSizeFile
-                          }
+                          loading={index === steps.length - 1 && progress}
+                          disabled={index === 1 && !isGetFile}
                         >
                           {!isUploadAgain
                             ? "آپلود دوباره"
