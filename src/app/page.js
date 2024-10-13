@@ -44,7 +44,9 @@ const Post = () => {
   const videoRef = useRef(null);
   const messageRef = useRef(null);
 
-  const baseUrl = process.env.BASEURL || "https://uat.kian.digital/api-proxy";
+  // https://api.levants.io
+  // "https://uat.kian.digital/api-proxy";
+  const baseUrl = process.env.BASEURL || "https://api.levants.io";
   const handleGetRecordFile = (file, lastStep) => {
     const blob = new Blob([file], {
       type: "video/mp4",
