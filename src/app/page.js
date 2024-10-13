@@ -52,12 +52,12 @@ const Post = () => {
       type: "video/mp4",
     });
 
-    // mediaRecorderRef.current = file;
-    setRedueSizeFile(true);
-    transcode(file).then((e) => {
-      setRedueSizeFile(false);
-      mediaRecorderRef.current = e;
-    });
+    mediaRecorderRef.current = file;
+    // setRedueSizeFile(true);
+    // transcode(file).then((e) => {
+    //   setRedueSizeFile(false);
+    //   mediaRecorderRef.current = e;
+    // });
 
     if (lastStep === "finish") {
       setIsGetFile(true);
