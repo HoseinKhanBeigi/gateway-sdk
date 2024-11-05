@@ -199,7 +199,7 @@ const Post = () => {
           );
           console.log(`Upload Progress: ${percentCompleted}%`);
         },
-        timeout: 60000, // Optional: Increase timeout for slower networks
+        timeout: 180000, // Optional: Increase timeout for slower networks
       };
 
       // Make the POST request to upload the video
